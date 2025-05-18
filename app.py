@@ -32,7 +32,7 @@ selected = user_input if user_input else selected_dropdown
 full_symbol = f"NSE:{selected}"
 
 # Update the ticker in Google Sheets
-data_sheet.update("A1", full_symbol)
+data_sheet.update_acell("A1", full_symbol)
 st.write(f"✅ Updated ticker to **{full_symbol}**, fetching new data…")
 time.sleep(5)  # Wait for data to be fetched via GoogleFinance formula
 
