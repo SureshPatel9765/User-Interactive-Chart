@@ -30,7 +30,7 @@ selected_dropdown = st.selectbox("Or select from popular NSE stocks:", tickers)
 # Determine the selected symbol
 selected = user_input if user_input else selected_dropdown
 if selected_dropdown:
-        user_input=""
+        user_input=" "
   
 full_symbol = (
         f'=GOOGLEFINANCE("NSE:{selected}",'
