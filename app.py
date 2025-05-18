@@ -11,7 +11,7 @@ creds = Credentials.from_service_account_info(st.secrets.gcp_service_account, sc
 client = gspread.authorize(creds)
 
 # Open your sheet
-sheet = client.open("Monthly or weekly Technical Analysis Scanner")
+sheet = client.open("Pydroid 3 Projects")
 data_sheet = sheet.worksheet("Data")
 
 # === Load NSE symbols ===
