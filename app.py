@@ -24,7 +24,7 @@ if 'user_input' not in st.session_state:
     st.session_state['user_input'] = ""
 
 def submit():
-    st.session_state.my_text = st.session_state.widget
+    st.session_state.user_input = st.session_state.widget
     st.session_state.widget = ""
 st.user_input("Enter NSE symbol (e.g., TCS):", key="widget", on_change=submit).upper().strip()
 user_input=st.session_state.user_input
