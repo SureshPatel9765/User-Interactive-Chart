@@ -26,6 +26,7 @@ def submit():
     st.session_state.user_input = st.session_state.widget
     st.session_state.widget = ""
 user_input = st.text_input("Enter NSE symbol (e.g., TCS):", key="widget", on_change=submit).upper().strip()
+selected_dropdown = "TCS"
 selected_dropdown = st.selectbox("Or select from popular NSE stocks:", tickers)
 if 'user_input' not in st.session_state:
     st.session_state['user_input'] = st.session_state.selected_dropdown
