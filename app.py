@@ -28,7 +28,8 @@ selected = user_input if user_input else selected_dropdown
 
 # === GoogleFinance Formula & Update ===
 full_symbol = f'=GOOGLEFINANCE("NSE:{selected}","all",TODAY()-250,TODAY())'
-user_input=" "
+if selected == selected_dropdown:
+    user_input=" "
 try:
     data_sheet.update_acell("A1", full_symbol)
     st.success(f"✅ Updated ticker formula in A1 to fetch: {selected}")
