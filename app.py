@@ -40,6 +40,7 @@ time.sleep(5)  # Wait for data to be fetched via GoogleFinance formula
 
 # Fetch data from the sheet
 data = data_sheet.get_all_records()
+user_input=""
 
 if data:
     df = pd.DataFrame(data)
