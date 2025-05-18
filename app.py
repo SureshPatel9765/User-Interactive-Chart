@@ -27,12 +27,13 @@ def submit():
     st.session_state.user_input = st.session_state.widget
     st.session_state.widget = ""
 user_input = st.text_input("Enter NSE symbol (e.g., TCS):", key="widget", on_change=submit).upper().strip()
-selected_dropdown = st.selectbox("Or select from popular NSE stocks:", tickers)
+if not user_input:
+    selected_dropdown = st.selectbox("Or select from popular NSE stocks:", tickers)
 
 # Use typed input if available, otherwise dropdown
 selected = user_input if user_input else selected_dropdown
-if 'selected_dropdown' not in st.session_state:
-    st.session_state['selected_dropdown'] = ""
+#if 'selected_dropdown' not in st.session_state:
+    #st.session_state['selected_dropdown'] = ""
 # === GoogleFinance Formula & Update ===
 full_symbol = f'=GOOGLEFINANCE("NSE:{selected}","all",TODAY()-250,TODAY())'
 try:
