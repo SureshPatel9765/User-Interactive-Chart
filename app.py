@@ -21,7 +21,9 @@ st.title("📈 NSE Stock Analysis")
 
 # Input section
 
-user_input = st.text_input("Enter NSE symbol (e.g., TCS):").upper().strip()
+user_response = st.text_input("Enter NSE symbol (e.g., TCS):").upper().strip()
+user_input = user_response
+user_response=""
 selected_dropdown = st.selectbox("Or select from popular NSE stocks:", tickers)
 # Use typed input if available, otherwise dropdown
 selected = user_input if user_input else selected_dropdown
