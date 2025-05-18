@@ -29,6 +29,9 @@ selected_dropdown = st.selectbox("Or select from popular NSE stocks:", tickers)
 
 # Determine the selected symbol
 selected = user_input if user_input else selected_dropdown
+if selected_dropdown:
+        user_input=""
+  
 full_symbol = (
         f'=GOOGLEFINANCE("NSE:{selected}",'
         '"all",TODAY()-250,TODAY())'
@@ -40,7 +43,6 @@ time.sleep(5)  # Wait for data to be fetched via GoogleFinance formula
 
 # Fetch data from the sheet
 data = data_sheet.get_all_records()
-user_input=""
 
 if data:
     df = pd.DataFrame(data)
