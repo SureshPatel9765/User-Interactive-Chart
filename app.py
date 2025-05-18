@@ -21,7 +21,7 @@ st.title("📈 NSE Stock Analysis")
 
 # Input section
 if 'user_input' not in st.session_state:
-    st.session_state['user_input'] = st.session_state.selected_symbol
+    st.session_state['user_input'] = st.session_state.selected_dropdown
 
 def submit():
     st.session_state.user_input = st.session_state.widget
