@@ -28,7 +28,7 @@ if 'submitted' not in st.session_state:
 def submit():
     st.session_state['user_input'] = True
 
-user_input = st.text_input("Enter NSE symbol (e.g., TCS):", key="user_input", on_change=submit).upper().strip()
+user_input = st.text_input("Enter NSE symbol (e.g., TCS):", key="user_input", on_change=submit()).upper().strip()
 selected_dropdown = st.selectbox("Or select from popular NSE stocks:", tickers)
 
 # Use typed input if available, otherwise dropdown
