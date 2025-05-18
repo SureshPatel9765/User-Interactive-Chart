@@ -22,11 +22,13 @@ st.title("📈 NSE Stock Analysis")
 # Input section
 if 'user_input' not in st.session_state:
     st.session_state['user_input'] = ""
+if 'submitted' not in st.session_state:
+    st.session_state.submitted = False
 
-def clear_input():
-    st.session_state['user_input'] = ""
+def submit():
+    st.session_state['user_input'] = True
 
-user_input = st.text_input("Enter NSE symbol (e.g., TCS):", key="user_input", on_change=clear_input).upper().strip()
+user_input = st.text_input("Enter NSE symbol (e.g., TCS):", key="user_input", on_change=submit).upper().strip()
 selected_dropdown = st.selectbox("Or select from popular NSE stocks:", tickers)
 
 # Use typed input if available, otherwise dropdown
