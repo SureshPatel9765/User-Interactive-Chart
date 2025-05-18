@@ -29,9 +29,10 @@ selected_dropdown = st.selectbox("Or select from popular NSE stocks:", tickers)
 
 # Determine the selected symbol
 selected = user_input if user_input else selected_dropdown
-full_symbol = (f'=GOOGLEFINANCE("NSE:{selected}",'
-               '"all",TODAY()-250,TODAY())')
-
+full_symbol = (
+        f'=GOOGLEFINANCE("NSE:{selected}",'
+        '"all",TODAY()-250,TODAY())'
+)
 # Update the ticker in Google Sheets
 data_sheet.update_acell("A1", full_symbol)
 st.write(f"✅ Updated ticker in Data:A1 formula to **{full_symbol}**, fetching new data…")
