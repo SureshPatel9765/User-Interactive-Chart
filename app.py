@@ -32,7 +32,8 @@ selected_dropdown = st.selectbox("Or select from popular NSE stocks:", tickers)
 
 # Use typed input if available, otherwise dropdown
 selected = user_input if user_input else selected_dropdown
-
+if 'user_input' not in st.session_state:
+    st.session_state['user_input'] = selected
 # === GoogleFinance Formula & Update ===
 full_symbol = f'=GOOGLEFINANCE("NSE:{selected}","all",TODAY()-250,TODAY())'
 try:
