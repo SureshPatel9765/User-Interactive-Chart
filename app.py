@@ -44,25 +44,25 @@ time.sleep(5)  # Wait for data to be fetched via GoogleFinance formula
 data = data_sheet.get_all_records()	
 	
 if data:	
-df = pd.DataFrame(data)	
-if "Date" in df.columns and "Close" in df.columns:	
-df["Date"] = pd.to_datetime(df["Date"])	
-df["Close"] = pd.to_numeric(df["Close"], errors='coerce')	
+   df = pd.DataFrame(data)	
+   if "Date" in df.columns and "Close" in df.columns:	
+   df["Date"] = pd.to_datetime(df["Date"])	
+   df["Close"] = pd.to_numeric(df["Close"], errors='coerce')	
 	
-# Calculate EMA and RSI	
-df["EMA_20"] = df["Close"].ewm(span=20, adjust=False).mean()	
+   # Calculate EMA and RSI	
+   df["EMA_20"] = df["Close"].ewm(span=20, adjust=False).mean()	
 	
-def compute_rsi(series, window=14):	
-delta = series.diff()	
-gain = delta.clip(lower=0)	
-loss = -delta.clip(upper=0)	
-avg_gain = gain.rolling(window=window).mean()	
-avg_loss = loss.rolling(window=window).mean()	
-rs = avg_gain / avg_loss	
-rsi = 100 - (100 / (1 + rs))	
-return rsi	
+   def compute_rsi(series, window=14):	
+    delta = series.diff()	
+    gain = delta.clip(lower=0)	
+    loss = -delta.clip(upper=0)	
+    avg_gain = gain.rolling(window=window).mean()	
+    avg_loss = loss.rolling(window=window).mean()	
+    rs = avg_gain / avg_loss	
+    rsi = 100 - (100 / (1 + rs))	
+   return rsi	
 	
-df["RSI"] = compute_rsi(df["Close"])	
+   df["RSI"] = compute_rsi(df["Close"])	
 	
 # Plot Price and EMA	
 fig = go.Figure()	
