@@ -16,96 +16,98 @@ data_sheet = sheet.worksheet("Data")
 
 st.title("📈 NSE Stock Analysis")
 
-# === Load NSE symbols ===
+# === Initialize session state ===
+if "user_input" not in st.session_state:
+    st.session_state.user_input = ""
+if "selected_dropdown" not in st.session_state:
+    st.session_state.selected_dropdown = ""
+
+# === Define tickers ===
 tickers = ["INFY", "TCS", "RELIANCE", "HDFCBANK", "ICICIBANK", "SBIN", "WIPRO", "HCLTECH", "ITC", "LT", "AXISBANK"]
 
-# Initialize session state variables
-if "selected_symbol" not in st.session_state:
-    st.session_state.selected_symbol = tickers[0]
+# === Define functions ===
+def submit_text_input():
+    st.session_state.user_input = st.session_state.text_input.upper().strip()
+    st.session_state.text_input = ""
 
-# Text input for custom symbol
-user_input = st.text_input("Enter NSE symbol (e.g., TCS):", key="user_input")
+def submit_dropdown():
+    st.session_state.selected_dropdown = st.session_state.dropdown
 
-# Dropdown for predefined symbols
-selected_dropdown = st.selectbox("Or select from popular NSE stocks:", tickers, key="dropdown")
+# === Text input for custom symbol ===
+st.text_input("Enter NSE symbol (e.g., TCS):", key="text_input", on_change=submit_text_input)
 
-# Determine the selected symbol
-if user_input:
-    selected = user_input.upper().strip()
-elif selected_dropdown:
-    selected = selected_dropdown
-else:
-    selected = st.session_state.selected_symbol
+# === Dropdown for predefined symbols ===
+st.selectbox("Or select from popular NSE stocks:", tickers, key="dropdown", on_change=submit_dropdown)
 
-st.session_state.selected_symbol = selected  # Update the session state
+# === Determine the selected symbol ===
+selected = st.session_state.user_input if st.session_state.user_input else st.session_state.selected_dropdown
 
-full_symbol = f'=GOOGLEFINANCE("NSE:{selected}","all",TODAY()-250,TODAY())'
+if selected:
+    full_symbol = f'=GOOGLEFINANCE("NSE:{selected}","all",TODAY()-250,TODAY())'
+    data_sheet.update_acell("A1", full_symbol)
+    st.write(f"✅ Updated ticker in Data:A1 formula to **{full_symbol}**, fetching new data…")
+    time.sleep(5)  # Wait for data to be fetched via GoogleFinance formula
 
-# Update the ticker in Google Sheets
-data_sheet.update_acell("A1", full_symbol)
-st.write(f"✅ Updated ticker in Data:A1 formula to **{full_symbol}**, fetching new data…")
-time.sleep(5)  # Wait for data to be fetched via GoogleFinance formula
+    # Fetch data from the sheet
+    data = data_sheet.get_all_records()
 
-# Fetch data from the sheet
-data = data_sheet.get_all_records()
+    if data:
+        df = pd.DataFrame(data)
+        if "Date" in df.columns and "Close" in df.columns:
+            df["Date"] = pd.to_datetime(df["Date"])
+            df["Close"] = pd.to_numeric(df["Close"], errors='coerce')
 
-if data:
-    df = pd.DataFrame(data)
-    if "Date" in df.columns and "Close" in df.columns:
-        df["Date"] = pd.to_datetime(df["Date"])
-        df["Close"] = pd.to_numeric(df["Close"], errors='coerce')
+            # Calculate EMA and RSI
+            df["EMA_20"] = df["Close"].ewm(span=20, adjust=False).mean()
 
-        # Calculate EMA and RSI
-        df["EMA_20"] = df["Close"].ewm(span=20, adjust=False).mean()
+            def compute_rsi(series, window=14):
+                delta = series.diff()
+                gain = delta.clip(lower=0)
+                loss = -delta.clip(upper=0)
+                avg_gain = gain.rolling(window=window).mean()
+                avg_loss = loss.rolling(window=window).mean()
+                rs = avg_gain / avg_loss
+                rsi = 100 - (100 / (1 + rs))
+                return rsi
 
-        def compute_rsi(series, window=14):
-            delta = series.diff()
-            gain = delta.clip(lower=0)
-            loss = -delta.clip(upper=0)
-            avg_gain = gain.rolling(window=window).mean()
-            avg_loss = loss.rolling(window=window).mean()
-            rs = avg_gain / avg_loss
-            rsi = 100 - (100 / (1 + rs))
-            return rsi
+            df["RSI"] = compute_rsi(df["Close"])
 
-        df["RSI"] = compute_rsi(df["Close"])
+            # Plot Price and EMA
+            fig = go.Figure()
+            fig.add_trace(go.Scatter(x=df["Date"], y=df["Close"], mode="lines", name="Close"))
+            fig.add_trace(go.Scatter(x=df["Date"], y=df["EMA_20"], mode="lines", name="EMA 20"))
 
-        # Plot Price and EMA
-        fig = go.Figure()
-        fig.add_trace(go.Scatter(x=df["Date"], y=df["Close"], mode="lines", name="Close"))
-        fig.add_trace(go.Scatter(x=df["Date"], y=df["EMA_20"], mode="lines", name="EMA 20"))
+            # Dynamic Y-axis range
+            y_min = df["Close"].min()
+            y_max = df["Close"].max()
+            y_range = [y_min - (y_max - y_min) * 0.1, y_max + (y_max - y_min) * 0.1]
 
-        # Dynamic Y-axis range
-        y_min = df["Close"].min()
-        y_max = df["Close"].max()
-        y_range = [y_min - (y_max - y_min) * 0.1, y_max + (y_max - y_min) * 0.1]
+            fig.update_layout(
+                title=f"{selected} Price Chart with EMA",
+                xaxis_title="Date",
+                yaxis_title="Price",
+                yaxis=dict(range=y_range)
+            )
 
-        fig.update_layout(
-            title=f"{selected} Price Chart with EMA",
-            xaxis_title="Date",
-            yaxis_title="Price",
-            yaxis=dict(range=y_range)
-        )
+            st.plotly_chart(fig)
 
-        st.plotly_chart(fig)
+            # Plot RSI
+            fig_rsi = go.Figure()
+            fig_rsi.add_trace(go.Scatter(x=df["Date"], y=df["RSI"], mode="lines", name="RSI"))
+            fig_rsi.update_layout(
+                title=f"{selected} RSI",
+                xaxis_title="Date",
+                yaxis_title="RSI",
+                yaxis=dict(range=[0, 100])
+            )
 
-        # Plot RSI
-        fig_rsi = go.Figure()
-        fig_rsi.add_trace(go.Scatter(x=df["Date"], y=df["RSI"], mode="lines", name="RSI"))
-        fig_rsi.update_layout(
-            title=f"{selected} RSI",
-            xaxis_title="Date",
-            yaxis_title="RSI",
-            yaxis=dict(range=[0, 100])
-        )
-
-        st.plotly_chart(fig_rsi)
-
+            st.plotly_chart(fig_rsi)
+        else:
+            st.write("Required columns not found in the sheet.")
     else:
-        st.write("Required columns not found in the sheet.")
-else:
-    st.write("No data available.")
+        st.write("No data available.")
 
 # === Display Available Symbols ===
 with st.expander("📘 View Available NSE Symbols"):
     st.write(", ".join(tickers))
+
