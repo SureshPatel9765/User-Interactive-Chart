@@ -96,11 +96,11 @@ yaxis=dict(range=[0, 100])
 st.plotly_chart(fig_rsi)	
 	
 else:	
-st.write("Required columns not found in the sheet.")	
+ st.write("Required columns not found in the sheet.")	
 else:	
-st.write("No data available.")	
+ st.write("No data available.")	
 	
 # === Display Available Symbols ===	
 with st.expander("📘 View Available NSE Symbols"):	
-st.write(", ".join(tickers))	
+ st.write(", ".join(tickers))	
 	
