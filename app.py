@@ -16,33 +16,34 @@ data_sheet = sheet.worksheet("Data")
 
 st.title("📈 NSE Stock Analysis")
 
-# === Initialize session state ===
-if "user_input" not in st.session_state:
-    st.session_state.user_input = ""
-if "selected_dropdown" not in st.session_state:
-    st.session_state.selected_dropdown = ""
-
-# === Define tickers ===
+# === Load NSE symbols ===
 tickers = ["INFY", "TCS", "RELIANCE", "HDFCBANK", "ICICIBANK", "SBIN", "WIPRO", "HCLTECH", "ITC", "LT", "AXISBANK"]
 
-# === Define functions ===
-def submit_text_input():
-    st.session_state.user_input = st.session_state.text_input.upper().strip()
-    st.session_state.text_input = ""
+# Initialize session state variables
+if 'selected_symbol' not in st.session_state:
+    st.session_state.selected_symbol = ''
+if 'input_symbol' not in st.session_state:
+    st.session_state.input_symbol = ''
+if 'dropdown_symbol' not in st.session_state:
+    st.session_state.dropdown_symbol = tickers[0]
 
-def submit_dropdown():
-    st.session_state.selected_dropdown = st.session_state.dropdown
+# Callback functions
+def submit_input():
+    st.session_state.selected_symbol = st.session_state.input_symbol.strip().upper()
+    st.session_state.input_symbol = ''
 
-# === Text input for custom symbol ===
-st.text_input("Enter NSE symbol (e.g., TCS):", key="text_input", on_change=submit_text_input)
+def select_dropdown():
+    st.session_state.selected_symbol = st.session_state.dropdown_symbol
 
-# === Dropdown for predefined symbols ===
-st.selectbox("Or select from popular NSE stocks:", tickers, key="dropdown", on_change=submit_dropdown)
+# Text input for custom symbol
+st.text_input("Enter NSE symbol (e.g., TCS):", key='input_symbol', on_change=submit_input)
 
-# === Determine the selected symbol ===
-selected = st.session_state.user_input if st.session_state.user_input else st.session_state.selected_dropdown
+# Dropdown for predefined symbols
+st.selectbox("Or select from popular NSE stocks:", tickers, key='dropdown_symbol', on_change=select_dropdown)
 
-if selected:
+# Proceed if a symbol is selected
+if st.session_state.selected_symbol:
+    selected = st.session_state.selected_symbol
     full_symbol = f'=GOOGLEFINANCE("NSE:{selected}","all",TODAY()-250,TODAY())'
     data_sheet.update_acell("A1", full_symbol)
     st.write(f"✅ Updated ticker in Data:A1 formula to **{full_symbol}**, fetching new data…")
@@ -110,4 +111,3 @@ if selected:
 # === Display Available Symbols ===
 with st.expander("📘 View Available NSE Symbols"):
     st.write(", ".join(tickers))
-
