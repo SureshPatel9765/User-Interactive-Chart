@@ -17,10 +17,10 @@ st.title("📈 NSE Stock Analysis")
 	
 # Text input for custom symbol	
 if "user_input" not in st.session_state:	
-st.session_state.user_input = ""	
+   st.session_state.user_input = ""	
 def submit():	
-st.session_state.user_input = st.session_state.widget	
-st.session_state.widget = ""
+   st.session_state.user_input = st.session_state.widget	
+   st.session_state.widget = ""
 st.text_input("Enter text here", key="widget", on_change=submit)	
 user_input = st.session_state.user_input	
 selected=user_input	
