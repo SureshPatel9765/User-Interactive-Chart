@@ -46,11 +46,11 @@ data = data_sheet.get_all_records()
 if data:	
    df = pd.DataFrame(data)	
    if "Date" in df.columns and "Close" in df.columns:	
-   df["Date"] = pd.to_datetime(df["Date"])	
-   df["Close"] = pd.to_numeric(df["Close"], errors='coerce')	
+    df["Date"] = pd.to_datetime(df["Date"])	
+    df["Close"] = pd.to_numeric(df["Close"], errors='coerce')	
 	
-   # Calculate EMA and RSI	
-   df["EMA_20"] = df["Close"].ewm(span=20, adjust=False).mean()	
+    # Calculate EMA and RSI	
+    df["EMA_20"] = df["Close"].ewm(span=20, adjust=False).mean()	
 	
    def compute_rsi(series, window=14):	
     delta = series.diff()	
