@@ -20,28 +20,24 @@ st.title("📈 NSE Stock Analysis")
 tickers = ["INFY", "TCS", "RELIANCE", "HDFCBANK", "ICICIBANK", "SBIN", "WIPRO", "HCLTECH", "ITC", "LT", "AXISBANK"]
 
 # Initialize session state variables
-if "user_input" not in st.session_state:
-    st.session_state.user_input = ""
-if "submitted" not in st.session_state:
-    st.session_state.submitted = False
-
-# Function to handle submission
-def submit():
-    st.session_state.submitted = True
+if "selected_symbol" not in st.session_state:
+    st.session_state.selected_symbol = tickers[0]
 
 # Text input for custom symbol
-st.text_input("Enter NSE symbol (e.g., TCS):", key="user_input", on_change=submit)
+user_input = st.text_input("Enter NSE symbol (e.g., TCS):", key="user_input")
 
 # Dropdown for predefined symbols
-selected_dropdown = st.selectbox("Or select from popular NSE stocks:", tickers)
+selected_dropdown = st.selectbox("Or select from popular NSE stocks:", tickers, key="dropdown")
 
 # Determine the selected symbol
-if st.session_state.submitted and st.session_state.user_input:
-    selected = st.session_state.user_input.upper().strip()
-    st.session_state.user_input = ""  # Clear input after processing
-    st.session_state.submitted = False
-else:
+if user_input:
+    selected = user_input.upper().strip()
+elif selected_dropdown:
     selected = selected_dropdown
+else:
+    selected = st.session_state.selected_symbol
+
+st.session_state.selected_symbol = selected  # Update the session state
 
 full_symbol = f'=GOOGLEFINANCE("NSE:{selected}","all",TODAY()-250,TODAY())'
 
